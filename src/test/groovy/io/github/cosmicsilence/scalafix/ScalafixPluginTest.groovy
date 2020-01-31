@@ -230,31 +230,53 @@ class ScalafixPluginTest extends Specification {
         task.rules.get().contains('Bar')
     }
 
-//    def 'scalafix uses the .scalafix config file from the subproject by default'() {
-//        setup:
-//        Project subproject = ProjectBuilder.builder().withName('the-subproject')
-//                .withParent(project).build()
-//
-//        when:
-//        applyScalafixPlugin(subproject)
-//
-//        then:
-//        ScalafixTask task = subproject.tasks.getByName('checkScalafixMain')
-//        task.configFile.get().asFile.path == "${subproject.projectDir}/.scalafix.conf"
-//    }
-//
-//    def 'scalafix uses the .scalafix config file from the root project as the file is not present in the subproject'() {
-//        setup:
-//        Project subproject = ProjectBuilder.builder().withName('the-subproject')
-//                .withParent(project).build()
-//
-//        when:
-//        applyScalafixPlugin(subproject)
-//
-//        then:
-//        ScalafixTask task = subproject.tasks.getByName('checkScalafixMain')
-//        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
-//    }
+    def 'scalafix uses the .scalafix config file provided via extension'() {
+        setup:
+        Project subproject = ProjectBuilder.builder().withName('the-subproject')
+                .withParent(project).build()
+        subproject.projectDir.mkdir()
+        File subprojectScalafixConf = new File(subproject.projectDir, '.scalafix.conf')
+        subprojectScalafixConf.write 'rules = [Foo, Bar]'
+        File extensionScalafixConf = new File(subproject.projectDir, '.test-scalafix.conf')
+        extensionScalafixConf.write 'rules = [Foo, Bar]'
+
+        when:
+        applyScalafixPlugin(subproject, true, '', extensionScalafixConf)
+
+        then:
+        ScalafixTask task = subproject.tasks.getByName('checkScalafixMain')
+        task.configFile.get().asFile.path == "${subproject.projectDir}/.test-scalafix.conf"
+    }
+
+    def 'scalafix uses the .scalafix config file from the subproject if it has not been provided via extension'() {
+        setup:
+        Project subproject = ProjectBuilder.builder().withName('the-subproject')
+                .withParent(project).build()
+        subproject.projectDir.mkdir()
+        File subprojectScalafixConf = new File(subproject.projectDir, '.scalafix.conf')
+        subprojectScalafixConf.write 'rules = [Foo, Bar]'
+
+        when:
+        applyScalafixPlugin(subproject, true, '', null)
+
+        then:
+        ScalafixTask task = subproject.tasks.getByName('checkScalafixMain')
+        task.configFile.get().asFile.path == "${subproject.projectDir}/.scalafix.conf"
+    }
+
+    def 'scalafix uses the .scalafix config file from the root project as the file is not present in the subproject and\
+ it is not specified in the extension'() {
+        setup:
+        Project subproject = ProjectBuilder.builder().withParent(project).withName('the-subproject').build()
+        scalafixConf.delete()
+
+        when:
+        applyScalafixPlugin(subproject, true, '', null)
+
+        then:
+        ScalafixTask task = subproject.tasks.getByName('checkScalafixMain')
+        task.configFile.get().asFile.path == "${subproject.rootProject.projectDir}/.scalafix.conf"
+    }
 
     private applyScalafixPlugin(Project project, Boolean autoConfigureSemanticDb = true,
                                 String rules = '', File configFile = project.file('.scalafix.conf')) {
