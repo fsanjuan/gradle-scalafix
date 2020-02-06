@@ -65,7 +65,8 @@ class ScalafixPlugin implements Plugin<Project> {
                                            Project project,
                                            ScalafixExtension extension) {
         def name = mainTask.name + sourceSet.name.capitalize()
-        def task = project.tasks.create(name, ScalafixTask, mode)
+        def task = project.task(name, type: ScalafixTask)
+        task.mode = mode
         task.description = "${mainTask.description} in '${sourceSet.getName()}'"
         task.group = mainTask.group
         task.source = sourceSet.allScala.matching {

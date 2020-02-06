@@ -7,7 +7,7 @@ import org.junit.rules.TemporaryFolder
 
 import spock.lang.Specification
 
-class ScalafixPluginFunctionalTest extends Specification {
+abstract class ScalafixPluginFunctionalTest extends Specification {
 
     @Rule
     public final TemporaryFolder testProjectDir = new TemporaryFolder()
@@ -33,7 +33,7 @@ repositories {
 
     def 'checkScalafixMain task runs compileScala by default'() {
         when:
-        BuildResult buildResult = runGradleTask('scalafix', ['-m'])
+        BuildResult buildResult = runGradleTask('scalafix', ['-m', '--stacktrace'])
 
         then:
         buildResult.output.contains(':compileScala SKIPPED')
@@ -116,6 +116,19 @@ sourceSets {
                 .withProjectDir(testProjectDir.getRoot())
                 .withArguments(arguments)
                 .withPluginClasspath()
+                .withGradleVersion(gradleVersion)
                 .build()
     }
+}
+
+class ScalafixPluginFunctionalTestGradle4 extends ScalafixPluginFunctionalTest {
+    String gradleVersion = '4.5'
+}
+
+class ScalafixPluginFunctionalTestGradle5 extends ScalafixPluginFunctionalTest {
+    String gradleVersion = '5.0'
+}
+
+class ScalafixPluginFunctionalTestGradle6 extends ScalafixPluginFunctionalTest {
+    String gradleVersion = '6.0'
 }

@@ -1,7 +1,7 @@
 package io.github.cosmicsilence.scalafix
 
 import org.gradle.api.Project
-import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 
 class ScalafixExtension {
@@ -11,7 +11,7 @@ class ScalafixExtension {
      * a file named '.scalafix.conf' in the project's directory and then in the
      * root project's directory, in this order.
      */
-    final RegularFileProperty configFile
+    final Property<File> configFile
 
     /**
      * Adds ANT style include patterns. If includes are not provided, then all files
@@ -37,7 +37,8 @@ class ScalafixExtension {
 
     ScalafixExtension(Project project) {
         this.project = project
-        configFile = project.objects.fileProperty()
+        configFile = project.objects.property(File)
+
         includes = project.objects.setProperty(String)
         excludes = project.objects.setProperty(String)
     }

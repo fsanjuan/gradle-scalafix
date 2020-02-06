@@ -2,16 +2,15 @@ package io.github.cosmicsilence.scalafix
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.scala.ScalaCompile
 import scalafix.interfaces.Scalafix
 import scalafix.interfaces.ScalafixMainMode
 
-import javax.inject.Inject
 import java.nio.file.Path
 
 class ScalafixTask extends SourceTask {
@@ -19,21 +18,17 @@ class ScalafixTask extends SourceTask {
     private static final Logger logger = Logging.getLogger(ScalafixTask)
     private static final String DEFAULT_CONFIG_FILE = ".scalafix.conf"
 
-    private final ScalafixMainMode mode
-
     @InputFile
     @PathSensitive(PathSensitivity.RELATIVE)
     @Optional
-    final RegularFileProperty configFile = project.objects.fileProperty()
+    final Property<File> configFile = project.objects.property(File)
 
     @Input
     @Optional
     final ListProperty<String> rules = project.objects.listProperty(String)
 
-    @Inject
-    ScalafixTask(ScalafixMainMode mode) {
-        this.mode = mode
-    }
+    @Input
+    ScalafixMainMode mode
 
     @TaskAction
     void run() {

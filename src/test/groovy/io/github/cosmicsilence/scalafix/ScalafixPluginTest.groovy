@@ -121,7 +121,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('checkScalafixMain')
         task.dependsOn.isEmpty()
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -136,7 +136,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('checkScalafixMain')
         task.dependsOn.find{ it.name == 'compileScala' }
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -151,7 +151,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('checkScalafixTest')
         task.dependsOn.isEmpty()
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -166,7 +166,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('checkScalafixTest')
         task.dependsOn.find{ it.name == 'compileTestScala' }
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -195,7 +195,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('scalafixMain')
         task.dependsOn.isEmpty()
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -210,7 +210,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('scalafixMain')
         task.dependsOn.find { it.name == 'compileScala' }
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -225,7 +225,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('scalafixTest')
         task.dependsOn.isEmpty()
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -240,7 +240,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('scalafixTest')
         task.dependsOn.find { it.name == 'compileTestScala' }
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
     }
@@ -260,7 +260,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('scalafixFoo')
         task.dependsOn.isEmpty()
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
         project.tasks.getByName('scalafix').dependsOn(task)
@@ -281,7 +281,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('scalafixBar')
         task.dependsOn.find { it.name == 'compileBarScala' }
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
         project.tasks.getByName('scalafix').dependsOn(task)
@@ -302,7 +302,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('checkScalafixFoo')
         task.dependsOn.isEmpty()
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
         project.tasks.getByName('checkScalafix').dependsOn(task)
@@ -323,7 +323,7 @@ class ScalafixPluginTest extends Specification {
         then:
         ScalafixTask task = project.tasks.getByName('checkScalafixBar')
         task.dependsOn.find { it.name == 'compileBarScala' }
-        task.configFile.get().asFile.path == "${project.projectDir}/.scalafix.conf"
+        task.configFile.get().path == "${project.projectDir}/.scalafix.conf"
         task.rules.get().contains('Foo')
         task.rules.get().contains('Bar')
         project.tasks.getByName('checkScalafix').dependsOn(task)
