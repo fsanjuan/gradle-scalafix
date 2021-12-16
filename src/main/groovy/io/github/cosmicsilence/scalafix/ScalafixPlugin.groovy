@@ -50,16 +50,16 @@ class ScalafixPlugin implements Plugin<Project> {
         project.sourceSets.each { SourceSet sourceSet ->
             if (ScalaSourceSet.isScalaSourceSet(project, sourceSet) && !extension.ignoreSourceSets.get().contains(sourceSet.name)) {
                 def scalaSourceSet = new ScalaSourceSet(project, sourceSet)
-                configureTaskForSourceSet(project, scalaSourceSet, IN_PLACE, fixTask, extension)
-                configureTaskForSourceSet(project, scalaSourceSet, CHECK, checkTask, extension)
-                project.tasks.create("configure${sourceSet.name.capitalize()}SemanticdbCompilerPlugin",
-                        ConfigureSemanticdbCompiler) { task ->
+                ConfigureSemanticdbCompiler configureSemanticdbCompilerTask = project.tasks.create(
+                        "configure${sourceSet.name.capitalize()}SemanticdbCompilerPlugin", ConfigureSemanticdbCompiler) { task ->
                     scalaVersion = project.provider({ resolveScalaVersion(scalaSourceSet) })
                     semanticdbVersion = extension.semanticdb.version
                     task.scalaSourceSet = scalaSourceSet
 
                     onlyIf { extension.semanticdb.autoConfigure.get() }
                 }
+                configureTaskForSourceSet(project, scalaSourceSet, IN_PLACE, fixTask, extension, configureSemanticdbCompilerTask)
+                configureTaskForSourceSet(project, scalaSourceSet, CHECK, checkTask, extension, configureSemanticdbCompilerTask)
             }
         }
     }
@@ -68,7 +68,8 @@ class ScalafixPlugin implements Plugin<Project> {
                                            ScalaSourceSet sourceSet,
                                            ScalafixMainMode taskMode,
                                            Task mainTask,
-                                           ScalafixExtension extension) {
+                                           ScalafixExtension extension,
+                                           ConfigureSemanticdbCompiler configureSemanticdbCompilerTask) {
         def taskName = mainTask.name + sourceSet.name.capitalize()
         def taskProvider = project.tasks.register(taskName, ScalafixTask, { scalafixTask ->
             scalafixTask.description = "${mainTask.description} in '${sourceSet.name}'"
@@ -89,7 +90,7 @@ class ScalafixPlugin implements Plugin<Project> {
             scalafixTask.compileOptions.set(project.provider({ sourceSet.compilerOptions }))
             scalafixTask.semanticdbConfigured = extension.semanticdb.autoConfigure.get()
 
-            sourceSet.compileTask.dependsOn project.tasks.getByName("configure${sourceSet.name.capitalize()}SemanticdbCompilerPlugin")
+            sourceSet.compileTask.dependsOn configureSemanticdbCompilerTask
 
             if (extension.semanticdb.autoConfigure.get()) {
                 scalafixTask.dependsOn sourceSet.compileTask
